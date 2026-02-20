@@ -29,8 +29,6 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          build-root-directory: fluxer_android
 
       - name: Build release APK
         run: ./gradlew assembleRelease --no-daemon
@@ -45,15 +43,13 @@ jobs:
       - name: Prepare release assets
         id: apk
         run: |
-          # Find universal APK (no ABI suffix)
+          # Find universal APK
           UNIVERSAL=$(find app/build/outputs/apk/release -name "*universal*.apk" -type f | head -1)
           if [ -z "$UNIVERSAL" ]; then
-            # Fallback to any release APK
             UNIVERSAL=$(find app/build/outputs/apk/release -name "*.apk" -type f | head -1)
           fi
-          echo "apk_path=$UNIVERSAL" >> "$GITHUB_OUTPUT"
-          echo "apk_name=$(basename "$UNIVERSAL")" >> "$GITHUB_OUTPUT"
-          echo "short_sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+          # Output full path from repo root for action-gh-release
+          echo "apk_path=fluxer_android/$UNIVERSAL" >> "$GITHUB_OUTPUT"
 
       - name: Create/update latest release
         uses: softprops/action-gh-release@v2
