@@ -217,12 +217,26 @@ class MainActivity : AppCompatActivity() {
                 color: #777;
                 cursor: not-allowed;
             }
-            .hint {
-                font-size: 12px;
+            .divider {
+                width: 100%;
+                max-width: 360px;
+                display: flex;
+                align-items: center;
+                margin: 20px 0;
                 color: #555;
-                margin-top: 16px;
-                text-align: center;
+                font-size: 13px;
             }
+            .divider::before, .divider::after {
+                content: '';
+                flex: 1;
+                height: 1px;
+                background: #2a2a4a;
+            }
+            .divider span { padding: 0 12px; white-space: nowrap; }
+            button.secondary {
+                background: #2a2a4a;
+            }
+            button.secondary:active { background: #3a3a5c; }
             .spinner {
                 display: none;
                 width: 20px; height: 20px;
@@ -238,16 +252,17 @@ class MainActivity : AppCompatActivity() {
         <body>
             <div class="logo">F</div>
             <h1>Connect to Fluxer</h1>
-            <p>Enter the URL of your self-hosted Fluxer instance to get started.</p>
+            <p>Use the official hosted instance or connect to your own self-hosted server.</p>
+            <button id="official-btn" onclick="connectOfficial()">Use Official Instance</button>
+            <div class="divider"><span>or connect to your own</span></div>
             <div class="field">
                 <input id="url" type="url" placeholder="https://chat.example.com"
                        autocapitalize="none" autocomplete="url" spellcheck="false"
                        enterkeyhint="go">
                 <div class="error" id="error"></div>
             </div>
-            <button id="btn" onclick="connect()">Connect</button>
+            <button id="btn" class="secondary" onclick="connect()">Connect</button>
             <div class="spinner" id="spinner"></div>
-            <p class="hint">Fluxer is self-hosted. Ask your server admin for the URL.</p>
 
             <script>
                 const urlInput = document.getElementById('url');
@@ -262,6 +277,10 @@ class MainActivity : AppCompatActivity() {
                 urlInput.addEventListener('input', () => {
                     error.style.display = 'none';
                 });
+
+                function connectOfficial() {
+                    window.FluxerBridge.saveAndConnect('https://web.fluxer.app');
+                }
 
                 function connect() {
                     let raw = urlInput.value.trim();
@@ -463,8 +482,10 @@ class MainActivity : AppCompatActivity() {
             val host = url.host ?: return false
             val instanceHost = getSavedInstanceUrl()?.let { Uri.parse(it).host }
 
-            // Keep navigation within the app for the configured instance
+            // Keep navigation within the app for the configured instance and official domains
             if (host == instanceHost ||
+                host.endsWith("fluxer.app") ||
+                host.endsWith("fluxer.gg") ||
                 host == "appassets.androidplatform.net" ||
                 url.scheme == "fluxer"
             ) {
