@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Fluxer brand dark palette -->
+    <color name="background">#FF1A1A2E</color>
+    <color name="surface">#FF16213E</color>
+    <color name="primary">#FF5865F2</color>
+    <color name="on_primary">#FFFFFFFF</color>
+    <color name="status_bar">#FF0F0F1A</color>
+    <color name="nav_bar">#FF0F0F1A</color>
+</resources>

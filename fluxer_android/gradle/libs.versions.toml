@@ -1,0 +1,23 @@
+[versions]
+compileSdk = "36"
+minSdk = "26"
+targetSdk = "36"
+
+kotlin = "2.2.0"
+agp = "8.11.1"
+webkit = "1.13.0"
+activity = "1.10.1"
+core-ktx = "1.16.0"
+core-splashscreen = "1.2.0-alpha02"
+appcompat = "1.7.0"
+
+[libraries]
+core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
+core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "core-splashscreen" }
+activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
+appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+webkit = { module = "androidx.webkit:webkit", version.ref = "webkit" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
