@@ -80,6 +80,26 @@ cat > "$SCRIPT_DIR/local.properties" <<EOF
 sdk.dir=$ANDROID_HOME
 EOF
 
+# --- Ensure aapt2 in gradle cache is ARM64 (Termux only) ---
+# AGP's AarResourcesCompilerTransform uses aapt2 from the maven jar cache,
+# which is x86_64 by default. On ARM64 Termux we repack it once so builds
+# survive gradle cache clears.
+if [ "$(uname -m)" = "aarch64" ]; then
+    AAPT2_JAR=$(find ~/.gradle/caches/modules-2 -path "*aapt2*linux.jar" -type f 2>/dev/null | head -1)
+    if [ -n "$AAPT2_JAR" ]; then
+        CACHED_ARCH=$(unzip -p "$AAPT2_JAR" aapt2 2>/dev/null | file - | grep -o "x86-64" || true)
+        if [ -n "$CACHED_ARCH" ]; then
+            echo "  Repacking gradle aapt2 jar with ARM64 binary..."
+            REPACK_DIR=$(mktemp -d)
+            (cd "$REPACK_DIR" && unzip -qo "$AAPT2_JAR" && cp "$AAPT2_BIN" aapt2 && chmod +x aapt2 && jar cf repacked.jar META-INF/MANIFEST.MF aapt2 NOTICE && cp repacked.jar "$AAPT2_JAR")
+            rm -rf "$REPACK_DIR"
+            # Clear stale transforms so they rebuild with ARM64 aapt2
+            find ~/.gradle/caches -maxdepth 2 -name "transforms" -type d -exec rm -rf {} + 2>/dev/null || true
+            echo "  Done — gradle aapt2 cache is now ARM64."
+        fi
+    fi
+fi
+
 # --- Optionally build web assets ---
 if [ "$BUILD_WEB" = true ]; then
     echo ""
